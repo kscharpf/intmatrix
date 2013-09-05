@@ -4,14 +4,27 @@ import (
        "testing"
 )
 
+func check_array(actual []int, expected []int, t *testing.T) {
+  if len(actual) != len(expected) {
+    t.Errorf("Actuals - num entries: %v Expected %v", len(actual), len(expected))
+  }
+
+  for i := range actual {
+    if actual[i] != expected[i] {
+      t.Errorf("Actual[%v] = %v expected %v", i, actual[i], expected[i])
+    }
+  }
+}
+
+  
+
 func TestIntMatrix(t *testing.T) {
-  const numRows, numCols = 5, 4
-  m := NewIntMatrix(numRows, numCols)
-  if m.NumRows() != numRows {
-    t.Errorf("m.NumRows() = %v, want %v", m.NumRows(), numRows)
+  m := NewIntMatrix()
+  if m.NumRows() != 0 {
+    t.Errorf("m.NumRows() = %v, want 0", m.NumRows())
   }  
-  if m.NumCols() != numCols {
-    t.Errorf("m.NumCols() = %v, want %v", m.NumCols(), numCols)
+  if m.NumCols() != 0 {
+    t.Errorf("m.NumCols() = %v, want 0", m.NumCols())
   }
  
   r1 := make([]int, 4)
@@ -21,6 +34,11 @@ func TestIntMatrix(t *testing.T) {
   r1[3] = 13
 
   m.AppendRow(r1)  
+
+
+  if m.NumRows() != 1 {
+    t.Errorf("m.NumRows() = %v, want 1", m.NumRows())
+  }
 
   r2 := make([]int, 4)
   r2[0] = 8
@@ -45,20 +63,14 @@ func TestIntMatrix(t *testing.T) {
   r4[3] = 16
   m.AppendRow(r4)  
  
-  checkRow := m.Row(0)
-  if len(checkRow) != m.NumCols() {
-    t.Errorf("len(checkRow) = %v want %v\n", len(checkRow), m.NumCols())
-  } 
-  if checkRow[0] != r1[0] {
-    t.Errorf("checkRow[0] = %v want %v\n", checkRow[0], r1[0])
-  }
-  if checkRow[1] != r1[1] {
-    t.Errorf("checkRow[1] = %v want %v\n", checkRow[1], r1[1])
-  }
-  if checkRow[2] != r1[2] {
-    t.Errorf("checkRow[2] = %v want %v\n", checkRow[2], r1[2])
-  }
-  if checkRow[3] != r1[3] {
-    t.Errorf("checkRow[3] = %v want %v\n", checkRow[3], r1[3])
-  }
+  check_array(r1, m.Row(0), t)
+  check_array(r2, m.Row(1), t)
+  check_array(r3, m.Row(2), t)
+  check_array(r4, m.Row(3), t)
+
+  m2 := m.Transpose()
+  check_array(m2.Column(0), m.Row(0), t)
+  check_array(m2.Column(1), m.Row(1), t)
+  check_array(m2.Column(2), m.Row(2), t)
+  check_array(m2.Column(3), m.Row(3), t)
 }

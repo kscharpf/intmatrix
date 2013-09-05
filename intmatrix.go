@@ -10,15 +10,10 @@ type IntMatrix struct {
   ColCount int
 }
 
-func NewIntMatrix(numRows int, numCols int) IntMatrix {
-  fields := make([][]int, numRows)
-  for i:= range fields {
-    fields[i] = make([]int, numCols)
-  }
+func NewIntMatrix() IntMatrix {
   m := IntMatrix{}
-  m.Fields = fields
-  m.RowCount = numRows
-  m.ColCount = numCols
+  m.RowCount = 0
+  m.ColCount = 0
 
   return m
 }
@@ -52,22 +47,27 @@ func (m IntMatrix) Row(idx int) []int {
   return m.Fields[idx]
 }
 
-func (m IntMatrix) AppendColumn(col []int) {
+func (m *IntMatrix) AppendColumn(col []int) {
   for i:= range m.Fields {
     m.Fields[i] = append(m.Fields[i], col[i])
   }
   m.ColCount = m.ColCount + 1
 }
 
-func (m IntMatrix) AppendRow(row []int) {
+func (m *IntMatrix) AppendRow(row []int) {
   m.Fields = append(m.Fields, row)
   m.RowCount = m.RowCount + 1
+  if m.ColCount != 0  &&  m.ColCount != len(row) {
+    panic(fmt.Sprintf("Incorrect number of fields in AppendRow: %d Expected %d\n", len(row), m.ColCount))
+  }
+    
+  m.ColCount = len(row)
 }
 
 
 
 func (m IntMatrix) Transpose() IntMatrix {
-  out := NewIntMatrix(m.NumCols(), m.NumRows())
+  out := NewIntMatrix()
   
   for i:=0; i<m.NumCols(); i++ {
     c := m.Column(i)
